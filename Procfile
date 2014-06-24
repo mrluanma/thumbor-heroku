@@ -1,1 +1,1 @@
-web: thumbor -p $PORT -c ./thumbor.conf
+web: bin/start-nginx circusd circus.ini
