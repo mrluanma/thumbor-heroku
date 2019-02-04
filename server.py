@@ -8,10 +8,11 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright (c) 2011 globo.com timehome@corp.globo.com
 
-import sys
-import logging
+from __future__ import print_function
 import os
+import sys
 import socket
+import logging
 from os.path import expanduser, dirname
 
 import tornado.ioloop
@@ -29,22 +30,24 @@ def get_as_integer(value):
     except ValueError:
         return None
 
+
 def main(arguments=None):
-    '''Runs thumbor server with the specified arguments.'''
+    """Runs thumbor server with the specified arguments."""
 
     server_parameters = get_server_parameters(arguments)
 
-    lookup_paths = [os.curdir,
-                    expanduser('~'),
-                    '/etc/',
-                    dirname(__file__)]
+    lookup_paths = [os.curdir, expanduser("~"), "/etc/", dirname(__file__)]
 
-    config = Config.load(server_parameters.config_path, conf_name='thumbor.conf', lookup_paths=lookup_paths)
+    config = Config.load(
+        server_parameters.config_path,
+        conf_name="thumbor.conf",
+        lookup_paths=lookup_paths,
+    )
 
     logging.basicConfig(
         level=getattr(logging, server_parameters.log_level.upper()),
         format=config.THUMBOR_LOG_FORMAT,
-        datefmt=config.THUMBOR_LOG_DATE_FORMAT
+        datefmt=config.THUMBOR_LOG_DATE_FORMAT,
     )
 
     importer = Importer(config)
@@ -58,8 +61,9 @@ def main(arguments=None):
 
     if not isinstance(server_parameters.security_key, basestring):
         raise RuntimeError(
-            'No security key was found for this instance of thumbor. ' +
-            'Please provide one using the conf file or a security key file.')
+            "No security key was found for this instance of thumbor. "
+            + "Please provide one using the conf file or a security key file."
+        )
 
     context = Context(server=server_parameters, config=config, importer=importer)
 
@@ -70,12 +74,10 @@ def main(arguments=None):
     if context.server.fd is not None:
         fd_number = get_as_integer(context.server.fd)
         if fd_number is None:
-            with open(context.server.fd, 'r') as sock:
+            with open(context.server.fd, "r") as sock:
                 fd_number = sock.fileno()
 
-        sock = socket.fromfd(fd_number,
-                             socket.AF_UNIX,
-                             socket.SOCK_STREAM)
+        sock = socket.fromfd(fd_number, socket.AF_UNIX, socket.SOCK_STREAM)
         server.add_socket(sock)
     else:
         server.bind(context.server.port, context.server.ip)
@@ -83,11 +85,13 @@ def main(arguments=None):
     server.start(1)
 
     try:
-        logging.debug('thumbor running at %s:%d' % (context.server.ip, context.server.port))
+        logging.debug(
+            "thumbor running at %s:%d" % (context.server.ip, context.server.port)
+        )
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
-        print
-        print "-- thumbor closed by user interruption --"
+        print("-- thumbor closed by user interruption --")
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -1,0 +1,12 @@
+{
+  "name": "thumbor-heroku",
+  "description": "Thumbor on Heroku",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "heroku-community/nginx"
+    }
+  ]
+}
